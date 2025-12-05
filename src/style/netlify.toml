@@ -1,4 +1,4 @@
-[buil]
+[build]
     command = "npm install && npm run build"
     publish = "src"
 
