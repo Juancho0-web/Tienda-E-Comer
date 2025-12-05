@@ -3,6 +3,6 @@
     publish = "src"
 
 [[redirects]]
-    from ="/*"
+    from = "/*"
     to = "/pages/index.html"
     status = 200
