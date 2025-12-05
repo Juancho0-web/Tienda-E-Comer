@@ -1,30 +1,28 @@
-import express from 'express'
+import express from 'express';
 import cors from 'cors';
 import "./db/db.js";
 import ProductRoutes from "./routes/productos.js";
-import UsersRoutes from './routes/Users.js';
-import  LoginUsuario from './routes/login.js';
+import userRoutes from './routes/user.js';
+import { loginUsuario } from './controllers/login.js';
 import PerfilRouter from './routes/perfil.js';
-import recuperarPasword from './routes/recuperar.js'
+import RecuperarPassword from './routes/recuperar.js'
 
-
-const app =express()
-app.use(express.json());
-//habilitar todas las rutas
-
+const app = express();
+//habilitar todas la rutas
 app.use(cors());
-            
-// primera ruta
+app.use(express.json());
 
-app.get('/',(req,res)=>{
-    res.send('Bienvenido al Cuerso de node express');
+// primer ruta
+
+app.get('/',(req,res)=> {
+    res.send('bienvenido al curso node y express')
 });
+//api producto
 app.use("/api/productos",ProductRoutes);
-app.use("/api/Users",UsersRoutes);
-app.use("/api/login",LoginUsuario);
-app.use("/api/perfil",PerfilRouter);
-app.use("/api/recuperar",recuperarPasword)
+app.use("/api/user", userRoutes);
+app.use("/api/login", loginUsuario);
+app.use("/api/perfil", PerfilRouter);
+app.use("/api/Recuperar", RecuperarPassword);
 
 
-app.listen(8081,()=> console.log('servidor corriendo en http://localhost:8081'));
-
+app.listen(8081,()=>console.log('servidor corriendo en http://localhost:8081'));

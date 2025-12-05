@@ -1,11 +1,12 @@
-import mongoose from "mongoose"
-const UsersShema = new mongoose.Schema({
-    Nombre:{type:String,required:true},
-    Apellido:{type:String,required:true},
-    Telefono:{type:Number,required:true,minlength:12},
-    Correo:{type:String,required:true},
-    Passwords:{type:String,required:true}
+import mongoose from "mongoose";
+
+const usershema = new mongoose.Schema({
+    email: {type:String, require:true},
+    name:{type:String, require:true},
+    pass:{type:String, require:true},
+    tel:{type:Number, require:true, minlenght:12},
 });
-// forzamos para que me guarde la informacion en la correccion de productos
-const Users=mongoose.model("Users",UsersShema,"Users")
-export default Users;
+//forzamos la conexion a que guarde la informacion en la base de datos
+const user=mongoose.model("usuarios", usershema, "usuarios")
+
+export default user;

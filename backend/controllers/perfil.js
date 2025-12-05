@@ -1,115 +1,102 @@
-import Users from "../models/user.js";
+//importamos la base de datos
+import users from "../models/user.js"
+import bcrypt from 'bcrypt'
 
-// Obtener perfil
-export const obtenerperfil = async (req, res) => {
+//obtener perfil del usuario de la base de datos
+
+export const obtenerPerfil = async (req, res ) =>{
     try {
         const {email} = req.body;
-        
         if(!email){
-            return res.status(400).json({message:"Email es Requerido"});
+            return res.status(400).json({message:"Email es requerido"});
         }
-        
-        const usuario = await Users.findOne({Correo:email}).select('-Passwords');
-        
+        //Traer el correo del usuario desde la base de datos
+        const usuario = await users.findOne({email:email}).select('-pass');
         if(!usuario){
-            return res.status(404).json({message:"Usuario no encontrado"});
+            return res.status(400).json({message:"Usuario no encontrado"});
         }
-        
         res.status(200).json({
             usuario:{
-                id: usuario._id,
-                Nombre: usuario.Nombre,
-                Apellido: usuario.Apellido,
-                Telefono: usuario.Telefono,
-                email: usuario.Correo
+                id:usuario._id,
+                name:usuario.name,
+                email:usuario.email,
+                telefono:usuario.tel
             }
+
         });
     } catch (error) {
         res.status(500).json({
-            message:"Error al obtener el perfil",
-            error: error.message
+            message:"error al obtener el perfil", error: error.message
         });
     }
-};
+}
 
-// ✅ FUNCIÓN CORREGIDA: editarPerfil → actualizarPerfil
-export const actualizarPerfil = async (req,res) => {
+//Actualizar perfil del usuario
+ export const actualizarPerfil = async (req, res) =>{
     try {
-        const {email, Nombre, Apellido, Telefono} = req.body;
-        
-        if (!email){
-            return res.status(400).json({message:"Email es requerido"});        
+        const {email, name, telefono} = req.body; 
+        if(!email || !name){
+            return res.status(400).json({message:"Email y Nombre son requeridos"});
         }
-        
-        if (!Nombre || !Apellido || !Telefono){
-            return res.status(400).json({message:"Todos los campos son obligatorios"});
-        }
-        
-        // ✅ CORRECCIÓN: findOneAndUpdate en lugar de findByIdAndUpdate
-        const usuarioActualizado = await Users.findOneAndUpdate(
-            {Correo: email},
+        //Buscar y actualizar el usuario en la base de datos
+        const usuario = await users.findOneAndUpdate(
+            {email:email},
             {
-                Nombre: Nombre,
-                Apellido: Apellido,
-                Telefono: Telefono
+                email:email,
+                name:name,
+                tel:telefono
             },
-            {new: true}
-        ).select('-Passwords'); // ✅ Corregido: -Passwords (no -paswords)
-
-        if (!usuarioActualizado) {
-            return res.status(404).json({message: "Usuario no encontrado"});
+            {new:true}
+        ).select('-pass');
+        if(!usuario){
+            return res.status(400).json({message:"Usuario no encontrado"});
         }
-        
         res.status(200).json({
-            message: "Perfil actualizado exitosamente",
             usuario:{
-                id: usuarioActualizado._id,
-                Nombre: usuarioActualizado.Nombre,
-                Apellido: usuarioActualizado.Apellido,
-                email: usuarioActualizado.Correo,
-                Telefono: usuarioActualizado.Telefono
+                id:usuario._id,
+                name:usuario.name,
+                email:usuario.email,
+                telefono:usuario.tel
             }
         });
-
     } catch (error) {
         res.status(500).json({
-            message: "Error al actualizar el perfil",
-            error: error.message
+            message:"error al actualizar el perfil", error: error.message
         });
     }
 };
 
-// ✅ FUNCIÓN CORREGIDA: eliminarperfil → eliminarPerfil
-export const eliminarPerfil = async(req, res) => {
-    try{
+//Eliminar perfil del usuario
+export const eliminarPerfil = async (req, res) =>{
+    try {
         const {email} = req.body;
-
+        // Validar que el email sea proporcionado
         if(!email){
-            return res.status(400).json({message: "Email es requerido"});
+            return res.status(400).json({
+                message:"Email es requeridos"
+            });
         }
-
-        const usuarioEliminado = await Users.findOneAndDelete({
-            Correo: email
+        //Buscar e eliminar a el usuario en la base de datos
+        const usuarioEliminado = await users.findOneAndDelete({
+            email:email
         });
-
-        if (!usuarioEliminado) {
-            return res.status(404).json({message:"Usuario no encontrado"});
-        }
-
+        if(!usuarioEliminado){
+            return res.status(404).json({
+                message:"Usuario no encontrado"
+            });
+    }
         res.status(200).json({
-            message: "Usuario eliminado exitosamente",
-            usuario:{
-                id: usuarioEliminado._id,
-                Nombre: usuarioEliminado.Nombre,
-                Apellido: usuarioEliminado.Apellido,
-                email: usuarioEliminado.Correo,
-                Telefono: usuarioEliminado.Telefono,
+            message:"Usuario eliminado exitosamente",
+            users: {
+                id:usuarioEliminado._id,
+                name:usuarioEliminado.name,
+                email:usuarioEliminado.email,
+                telefono:usuarioEliminado.tel
             }
         });
-    } catch(error) {
+    } catch (error) {
         res.status(500).json({
-            message:"Error al eliminar perfil",
-            error: error.message 
+            message:"Error al eliminar el perfil", error: error.message
         });
     }
 };

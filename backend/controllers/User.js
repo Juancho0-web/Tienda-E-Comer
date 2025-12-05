@@ -1,37 +1,26 @@
-import Users from "../models/user.js";
+import user from "../models/user.js";
 import bcrypt from "bcrypt";
-
-// crear productos
-
-export const registrarUsers = async (req,res) => {
+//crear usuario
+export const registrarUser=async(req,res)=>{
     try {
-        const{Nombre,Apellido,Telefono,Correo,Passwords} =req.body;
-
-         //validar que no falte campo
-
-        if (!Nombre||!Apellido||!Telefono||!Correo||!Passwords){
-            return res.status(400).json({menssage:"Todos los campas son obligatorioas"});
-
-        }
-        //validar si el user ya existe
-        const existeUsuario = await Users.findOne({Correo});
+        const{email, name, pass, tel}=req.body;
+        //validar informacion
+        if (!email||!name||!pass||!tel){
+            return res.status(400).json({message: "llene los campos"})
+         }         
+        //valida el usuario si ya exite
+        const existeUsuario = await user.findOne({email});
         if(existeUsuario){
-            return res.status(400).json({menssage:"Usuario ya registrado"});
+            return res.status(400).json({message:"Usuario ya esta registrado"});
         }
-        //encriptar la contraseña
-
-        const saltRounds=10;
-        const hashedPassword=await bcrypt.hash(Passwords,saltRounds);
-        //Crear el Usuario en la base de datos
-        const nuevoUsuario = new Users({Nombre,Apellido,Telefono,Correo,Passwords:hashedPassword});
-        await nuevoUsuario.save();
-        res.status(201).json({menssage:"Usuario Registrado con exito"});
-
-    } catch (error) {
-        
-        res.status(500).json({menssage:"Error al registrar Usuario",Error:Error.menssage});
-    }
-
-
-}
-    
+        //Encriptar contraseña
+        const saltRounds = 10;
+        const hasherPassword = await bcrypt.hash(pass, saltRounds);
+        //Crear usuario en la base de datos
+        const newusuario = new user({email, name, pass:hasherPassword, tel});
+        await newusuario.save();
+        res.status(201).json({message: "Usuario registrado con exito"});
+    }catch (error) {
+        res.status(500).json({message: "Error al registrar el usuario", error:error.message});
+    };
+};
